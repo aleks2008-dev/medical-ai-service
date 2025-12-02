@@ -1,16 +1,16 @@
-"""Сервис для рекомендации врачей по симптомам."""
+"""Service for recommending doctors based on symptoms."""
 
 from src.models.symptom_data import SYMPTOM_DOCTOR_MAP
 
 
 def recommend_doctor(symptoms: str) -> str:
-    """Рекомендует профиль врача по введенным симптомам.
+    """Recommends a doctor profile based on entered symptoms.
     
     Args:
-        symptoms: Строка с описанием симптомов
+        symptoms: String with symptom description
         
     Returns:
-        Строка с рекомендацией врача
+        String with doctor recommendation
     """
     matches = []
     for word, doctors in SYMPTOM_DOCTOR_MAP.items():

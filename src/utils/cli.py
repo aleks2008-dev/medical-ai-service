@@ -1,18 +1,18 @@
-"""Утилиты для командной строки."""
+"""Command line interface utilities."""
 
 from src.config.settings import EXIT_COMMANDS
 from src.services.ai_service import AIService
 
 
 class CLI:
-    """Интерфейс командной строки для медицинского ассистента."""
+    """Command line interface for medical assistant."""
     
     def __init__(self):
-        """Инициализация CLI."""
+        """Initialize CLI."""
         self.ai_service = AIService()
     
     def run_tests(self):
-        """Запускает тестовые примеры."""
+        """Runs test examples."""
         print("🧪 Запуск тестовых примеров...\n")
         
         test_cases = [
@@ -29,7 +29,7 @@ class CLI:
                 print(f"Ошибка в тесте {i}: {e}\n")
     
     def run_interactive(self):
-        """Запускает интерактивный режим."""
+        """Runs interactive mode."""
         print("💬 Интерактивный режим (введи 'quit' для выхода):")
         
         while True:
@@ -46,6 +46,6 @@ class CLI:
                 print(f"Ошибка: {e}")
     
     def run(self):
-        """Запускает полный цикл: тесты + интерактивный режим."""
+        """Runs full cycle: tests + interactive mode."""
         self.run_tests()
         self.run_interactive()

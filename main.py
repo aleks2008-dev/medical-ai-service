@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-Медицинский AI ассистент.
+Medical AI Assistant.
 
-Интеллектуальный помощник для анализа симптомов и рекомендации врачей.
+Intelligent assistant for symptom analysis and doctor recommendations.
 """
 
 from src.utils.cli import CLI
 
 
 def main():
-    """Главная функция приложения."""
+    """Main application function."""
     print("🏥 Medical AI Service")
     print("=" * 50)
     

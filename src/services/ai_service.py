@@ -1,4 +1,4 @@
-"""Сервис для работы с AI моделью."""
+"""Service for working with AI model."""
 
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -11,10 +11,10 @@ from src.services.doctor_service import recommend_doctor
 
 
 class AIService:
-    """Сервис для работы с AI моделью."""
+    """Service for working with AI model."""
     
     def __init__(self):
-        """Инициализация AI сервиса."""
+        """Initialize AI service."""
         self.model = init_chat_model(
             MODEL_NAME,
             model_provider=MODEL_PROVIDER,
@@ -23,13 +23,13 @@ class AIService:
         )
     
     def analyze_and_respond(self, user_input: str) -> str:
-        """Анализирует ввод пользователя и возвращает ответ.
+        """Analyzes user input and returns response.
         
         Args:
-            user_input: Ввод пользователя
+            user_input: User input
             
         Returns:
-            Ответ AI ассистента
+            AI assistant response
         """
         if self._has_symptoms(user_input):
             return self._handle_symptoms(user_input)
@@ -37,24 +37,24 @@ class AIService:
             return self._handle_general_chat(user_input)
     
     def _has_symptoms(self, user_input: str) -> bool:
-        """Проверяет наличие симптомов во вводе пользователя.
+        """Checks for symptoms in user input.
         
         Args:
-            user_input: Ввод пользователя
+            user_input: User input
             
         Returns:
-            True если найдены симптомы, False иначе
+            True if symptoms found, False otherwise
         """
         return any(keyword in user_input.lower() for keyword in SYMPTOM_KEYWORDS)
     
     def _handle_symptoms(self, user_input: str) -> str:
-        """Обрабатывает ввод с симптомами.
+        """Handles input with symptoms.
         
         Args:
-            user_input: Ввод пользователя с симптомами
+            user_input: User input with symptoms
             
         Returns:
-            Ответ с рекомендацией врача
+            Response with doctor recommendation
         """
         doctor_recommendation = recommend_doctor(user_input)
         
@@ -67,13 +67,13 @@ class AIService:
         return response.content
     
     def _handle_general_chat(self, user_input: str) -> str:
-        """Обрабатывает обычный разговор.
+        """Handles general conversation.
         
         Args:
-            user_input: Ввод пользователя
+            user_input: User input
             
         Returns:
-            Общий ответ ассистента
+            General assistant response
         """
         messages = [
             SystemMessage(content=GENERAL_ASSISTANT_PROMPT),
