@@ -25,3 +25,29 @@ Thumbs.db
 # Database
 *.db
 *.sqlite3
+
+# AI/ML specific
+models/
+checkpoints/
+*.pkl
+*.joblib
+*.h5
+*.onnx
+*.pt
+*.pth
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Data files
+data/
+datasets/
+*.csv
+*.json
+*.parquet
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
