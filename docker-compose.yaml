@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  medical-ai:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_BASE_URL=http://localhost:11434
+    stdin_open: true
+    tty: true
+    network_mode: "host"
