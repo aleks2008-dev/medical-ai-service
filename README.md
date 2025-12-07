@@ -1,36 +1,36 @@
 # 🏥 Medical AI Service
 
-Интеллектуальный медицинский ассистент для анализа симптомов и рекомендации врачей-специалистов.
+Intelligent medical assistant for symptom analysis and specialist doctor recommendations.
 
-## 🚀 Возможности
+## 🚀 Features
 
-- **Анализ симптомов** - распознает медицинские жалобы пациентов
-- **Рекомендации врачей** - предлагает подходящих специалистов
-- **AI-powered ответы** - использует LLM для формирования дружелюбных ответов
-- **Интерактивный режим** - консольный чат с ассистентом
-- **Локальная модель** - работает с Ollama без отправки данных в облако
+- **Symptom Analysis** - recognizes patient medical complaints
+- **Doctor Recommendations** - suggests appropriate specialists
+- **AI-powered Responses** - uses LLM to generate friendly responses
+- **Interactive Mode** - console chat with the assistant
+- **Local Model** - works with Ollama without sending data to the cloud
 
-## 🛠️ Технологии
+## 🛠️ Technologies
 
 - **Python 3.8+**
-- **LangChain** - фреймворк для работы с LLM
-- **Ollama** - локальный запуск языковых моделей
-- **Llama 3.2:3b** - языковая модель
+- **LangChain** - framework for working with LLM
+- **Ollama** - local language model execution
+- **Llama 3.2:3b** - language model
 
-## 📋 Поддерживаемые симптомы
+## 📋 Supported Symptoms
 
-| Симптом | Рекомендуемые врачи |
+| Symptom | Recommended Doctors |
 |---------|-------------------|
-| Головная боль | Невролог, Терапевт |
-| Температура | Терапевт |
-| Кашель | Пульмонолог, Терапевт |
-| Боль в животе | Гастроэнтеролог |
-| Проблемы с глазами | Офтальмолог |
-| Зубная боль | Стоматолог |
+| Headache | Neurologist, General Practitioner |
+| Fever | General Practitioner |
+| Cough | Pulmonologist, General Practitioner |
+| Abdominal Pain | Gastroenterologist |
+| Eye Problems | Ophthalmologist |
+| Toothache | Dentist |
 
-## 🔧 Установка
+## 🔧 Installation
 
-### 1. Установите Ollama
+### 1. Install Ollama
 
 ```bash
 # macOS
@@ -40,67 +40,67 @@ brew install ollama
 curl -fsSL https://ollama.ai/install.sh | sh
 
 # Windows
-# Скачайте с https://ollama.ai/download
+# Download from https://ollama.ai/download
 ```
 
-### 2. Загрузите модель
+### 2. Download the model
 
 ```bash
 ollama pull llama3.2:3b
 ```
 
-### 3. Клонируйте репозиторий
+### 3. Clone the repository
 
 ```bash
-git clone https://github.com/ваш-username/medical-ai-service.git
+git clone https://github.com/your-username/medical-ai-service.git
 cd medical-ai-service
 ```
 
-### 4. Создайте виртуальное окружение
+### 4. Create virtual environment
 
 ```bash
 python -m venv venv
 source venv/bin/activate  # macOS/Linux
-# или
+# or
 venv\Scripts\activate     # Windows
 ```
 
-### 5. Установите зависимости
+### 5. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 🚀 Запуск
+## 🚀 Usage
 
-### 1. Запустите Ollama
+### 1. Start Ollama
 
 ```bash
 ollama serve
 ```
 
-### 2. Запустите ассистента
+### 2. Run the assistant
 
 ```bash
 python main.py
 ```
 
-## 💬 Примеры использования
+## 💬 Usage Examples
 
 ```
-Вопрос: У меня болит голова и температура
-Ответ: Понимаю, что вы чувствуете недомогание. При головной боли и температуре рекомендую обратиться к терапевту или неврологу. Они смогут провести необходимое обследование и назначить подходящее лечение.
+Question: I have a headache and fever
+Answer: I understand you're feeling unwell. For headache and fever, I recommend seeing a general practitioner or neurologist. They can conduct the necessary examination and prescribe appropriate treatment.
 
-Вопрос: Кашель уже неделю
-Ответ: При продолжительном кашле стоит обратиться к пульмонологу или терапевту для диагностики и лечения.
+Question: I've had a cough for a week
+Answer: For a persistent cough, you should see a pulmonologist or general practitioner for diagnosis and treatment.
 
-Вопрос: Спасибо за помощь!
-Ответ: Пожалуйста! Берегите себя и не откладывайте визит к врачу при необходимости.
+Question: Thank you for your help!
+Answer: You're welcome! Take care of yourself and don't delay visiting a doctor when necessary.
 ```
 
-## ⚙️ Конфигурация
+## ⚙️ Configuration
 
-Настройки модели находятся в `src/config/settings.py`:
+Model settings are located in `src/config/settings.py`:
 
 ```python
 MODEL_NAME = "llama3.2:3b"
@@ -109,52 +109,52 @@ MODEL_TEMPERATURE = 0
 OLLAMA_BASE_URL = "http://localhost:11434"
 ```
 
-## 🔍 Структура проекта
+## 🔍 Project Structure
 
 ```
 medical-ai-service/
-├── src/                    # Исходный код
-│   ├── config/            # Конфигурация
-│   │   └── settings.py    # Настройки приложения
-│   ├── models/            # Модели данных
-│   │   └── symptom_data.py # Данные о симптомах
-│   ├── services/          # Бизнес-логика
-│   │   ├── ai_service.py  # AI сервис
-│   │   └── doctor_service.py # Сервис врачей
-│   └── utils/             # Утилиты
-│       └── cli.py         # CLI интерфейс
-├── main.py               # Главный файл приложения
-├── requirements.txt      # Python зависимости
-├── .gitignore           # Исключения для Git
-├── .env                 # Переменные окружения
-└── README.md            # Документация
+├── src/                    # Source code
+│   ├── config/            # Configuration
+│   │   └── settings.py    # Application settings
+│   ├── models/            # Data models
+│   │   └── symptom_data.py # Symptom data
+│   ├── services/          # Business logic
+│   │   ├── ai_service.py  # AI service
+│   │   └── doctor_service.py # Doctor service
+│   └── utils/             # Utilities
+│       └── cli.py         # CLI interface
+├── main.py               # Main application file
+├── requirements.txt      # Python dependencies
+├── .gitignore           # Git exclusions
+├── .env                 # Environment variables
+└── README.md            # Documentation
 ```
 
-## ⚠️ Важные замечания
+## ⚠️ Important Notes
 
-- **Не заменяет врача** - это инструмент для первичной консультации
-- **Требует Ollama** - убедитесь, что сервис запущен
-- **Локальная обработка** - данные не передаются в интернет
-- **Ограниченный словарь** - распознает базовые симптомы
+- **Does not replace a doctor** - this is a tool for initial consultation
+- **Requires Ollama** - make sure the service is running
+- **Local processing** - data is not sent to the internet
+- **Limited vocabulary** - recognizes basic symptoms
 
-## 🤝 Вклад в проект
+## 🤝 Contributing
 
-1. Форкните репозиторий
-2. Создайте ветку для новой функции
-3. Внесите изменения
-4. Создайте Pull Request
+1. Fork the repository
+2. Create a branch for new feature
+3. Make changes
+4. Create a Pull Request
 
-## 📝 Лицензия
+## 📝 License
 
-MIT License - см. файл LICENSE
+MIT License - see LICENSE file
 
-## 🆘 Поддержка
+## 🆘 Support
 
-При возникновении проблем:
-1. Проверьте, что Ollama запущен
-2. Убедитесь, что модель llama3.2:3b загружена
-3. Проверьте версии зависимостей
+If you encounter problems:
+1. Check that Ollama is running
+2. Make sure the llama3.2:3b model is loaded
+3. Check dependency versions
 
 ---
 
-**⚕️ Помните: этот ассистент не заменяет профессиональную медицинскую консультацию!**
+**⚕️ Remember: this assistant does not replace professional medical consultation!**

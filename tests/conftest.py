@@ -5,7 +5,7 @@ import sys
 import os
 from unittest.mock import Mock, patch
 
-# Добавляем src в Python path для импортов
+# Add src to Python path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from src.services.ai_service import AIService
@@ -15,7 +15,7 @@ from src.models.symptom_data import SYMPTOM_DOCTOR_MAP
 
 @pytest.fixture
 def sample_symptoms():
-    """Тестовые симптомы для проверки."""
+    """Sample symptoms for testing."""
     return {
         "головная_боль": "у меня болит голова",
         "зубная_боль": "зубная боль",
@@ -27,7 +27,7 @@ def sample_symptoms():
 
 @pytest.fixture
 def expected_doctors():
-    """Ожидаемые рекомендации врачей."""
+    """Expected doctor recommendations."""
     return {
         "головная_боль": ["невролог", "терапевт"],
         "зубная_боль": ["стоматолог"],
@@ -38,7 +38,7 @@ def expected_doctors():
 
 @pytest.fixture
 def mock_ollama_model():
-    """Мок для Ollama модели."""
+    """Mock for Ollama model."""
     with patch('src.services.ai_service.init_chat_model') as mock_model:
         mock_instance = Mock()
         mock_instance.invoke.return_value.content = "Тестовый ответ от AI"
@@ -48,13 +48,13 @@ def mock_ollama_model():
 
 @pytest.fixture
 def ai_service_with_mock(mock_ollama_model):
-    """AI сервис с замоканной моделью."""
+    """AI service with mocked model."""
     return AIService()
 
 
 @pytest.fixture(scope="session")
 def test_config():
-    """Тестовая конфигурация."""
+    """Test configuration."""
     return {
         "OLLAMA_BASE_URL": "http://localhost:11434",
         "MODEL_NAME": "llama3.2:3b",
@@ -65,15 +65,15 @@ def test_config():
 
 @pytest.fixture(autouse=True)
 def setup_test_environment(monkeypatch):
-    """Автоматическая настройка тестового окружения."""
-    # Устанавливаем тестовые переменные окружения
+    """Automatic test environment setup."""
+    # Set test environment variables
     monkeypatch.setenv("OLLAMA_BASE_URL", "http://localhost:11434")
     monkeypatch.setenv("PYTHONPATH", os.path.join(os.path.dirname(__file__), '..'))
 
 
-# Pytest хуки для настройки
+# Pytest hooks for configuration
 def pytest_configure(config):
-    """Конфигурация pytest."""
+    """Pytest configuration."""
     config.addinivalue_line(
         "markers", "integration: marks tests as integration tests"
     )
