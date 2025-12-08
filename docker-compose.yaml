@@ -5,8 +5,13 @@ services:
     build: .
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     environment:
-      - OLLAMA_BASE_URL=http://localhost:11434
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - MODEL_NAME=${MODEL_NAME:-llama3.2:3b}
+      - MODEL_PROVIDER=${MODEL_PROVIDER:-ollama}
+      - MODEL_TEMPERATURE=${MODEL_TEMPERATURE:-0}
     stdin_open: true
     tty: true
     network_mode: "host"
