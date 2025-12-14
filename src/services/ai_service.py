@@ -15,12 +15,17 @@ class AIService:
     
     def __init__(self):
         """Initialize AI service."""
-        self.model = init_chat_model(
-            MODEL_NAME,
-            model_provider=MODEL_PROVIDER,
-            temperature=MODEL_TEMPERATURE,
-            base_url=OLLAMA_BASE_URL
-        )
+        try:
+            self.model = init_chat_model(
+                MODEL_NAME,
+                model_provider=MODEL_PROVIDER,
+                temperature=MODEL_TEMPERATURE,
+                base_url=OLLAMA_BASE_URL
+            )
+        except Exception as e:
+            print(f"Error initializing AI model: {e}")
+            print("Please ensure Ollama is running and the model is available.")
+            raise
     
     def analyze_and_respond(self, user_input: str) -> str:
         """Analyzes user input and returns response.
@@ -31,10 +36,17 @@ class AIService:
         Returns:
             AI assistant response
         """
-        if self._has_symptoms(user_input):
-            return self._handle_symptoms(user_input)
-        else:
-            return self._handle_general_chat(user_input)
+        if not user_input or not user_input.strip():
+            return "Please provide your symptoms or question."
+        
+        try:
+            if self._has_symptoms(user_input):
+                return self._handle_symptoms(user_input)
+            else:
+                return self._handle_general_chat(user_input)
+        except Exception as e:
+            print(f"Error processing request: {e}")
+            return "I'm sorry, I'm having trouble processing your request. Please try again or consult a healthcare professional."
     
     def _has_symptoms(self, user_input: str) -> bool:
         """Checks for symptoms in user input.
@@ -56,15 +68,19 @@ class AIService:
         Returns:
             Response with doctor recommendation
         """
-        doctor_recommendation = recommend_doctor(user_input)
-        
-        messages = [
-            SystemMessage(content=SYSTEM_PROMPT),
-            HumanMessage(content=f"Пациент говорит: {user_input}\nРекомендация врача: {doctor_recommendation}\nСформулируй дружелюбный ответ пациенту.")
-        ]
-        
-        response = self.model.invoke(messages)
-        return response.content
+        try:
+            doctor_recommendation = recommend_doctor(user_input)
+            
+            messages = [
+                SystemMessage(content=SYSTEM_PROMPT),
+                HumanMessage(content=f"Пациент говорит: {user_input}\nРекомендация врача: {doctor_recommendation}\nСформулируй дружелюбный ответ пациенту.")
+            ]
+            
+            response = self.model.invoke(messages)
+            return response.content
+        except Exception as e:
+            print(f"Error handling symptoms: {e}")
+            return f"Based on your symptoms, I recommend consulting: {recommend_doctor(user_input)}"
     
     def _handle_general_chat(self, user_input: str) -> str:
         """Handles general conversation.
@@ -75,10 +91,14 @@ class AIService:
         Returns:
             General assistant response
         """
-        messages = [
-            SystemMessage(content=GENERAL_ASSISTANT_PROMPT),
-            HumanMessage(content=user_input)
-        ]
-        
-        response = self.model.invoke(messages)
-        return response.content
+        try:
+            messages = [
+                SystemMessage(content=GENERAL_ASSISTANT_PROMPT),
+                HumanMessage(content=user_input)
+            ]
+            
+            response = self.model.invoke(messages)
+            return response.content
+        except Exception as e:
+            print(f"Error in general chat: {e}")
+            return "I'm here to help with medical questions. Please describe your symptoms or ask a health-related question."

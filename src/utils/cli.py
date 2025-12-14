@@ -33,17 +33,21 @@ class CLI:
         print("💬 Интерактивный режим (введи 'quit' для выхода):")
         
         while True:
-            user_input = input("\nВопрос: ")
-            
-            if user_input.lower() in EXIT_COMMANDS:
-                print("👋 До свидания!")
-                break
-            
             try:
+                user_input = input("\nВопрос: ")
+                
+                if user_input.lower() in EXIT_COMMANDS:
+                    print("👋 До свидания!")
+                    break
+                
                 response = self.ai_service.analyze_and_respond(user_input)
                 print(f"Ответ: {response}")
+            except KeyboardInterrupt:
+                print("\n👋 До свидания!")
+                break
             except Exception as e:
                 print(f"Ошибка: {e}")
+                print("Попробуйте еще раз или обратитесь к врачу.")
     
     def run(self):
         """Runs full cycle: tests + interactive mode."""
