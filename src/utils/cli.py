@@ -2,6 +2,7 @@
 
 from src.config.settings import EXIT_COMMANDS
 from src.services.ai_service import AIService
+from src.utils.health import health_check, quick_health_check
 
 
 class CLI:
@@ -49,7 +50,32 @@ class CLI:
                 print(f"Ошибка: {e}")
                 print("Попробуйте еще раз или обратитесь к врачу.")
     
+    def run_health_check(self):
+        """Runs health check and displays system status."""
+        print("🔍 Running health check...\n")
+        
+        try:
+            health_status = health_check()
+            print(f"✅ Service: {health_status['service']}")
+            print(f"✅ Status: {health_status['status']}")
+            print(f"✅ Version: {health_status['version']}")
+            print(f"✅ Timestamp: {health_status['timestamp']}")
+            
+            print("\n📊 Components:")
+            for component, info in health_status['components'].items():
+                status_icon = "✅" if info['status'] in ['configured', 'available'] else "❌"
+                print(f"  {status_icon} {component}: {info['status']}")
+            
+            print("\n🖥️ Environment:")
+            for key, value in health_status['environment'].items():
+                print(f"  ✅ {key}: {value}")
+                
+        except Exception as e:
+            print(f"❌ Health check failed: {e}")
+    
     def run(self):
         """Runs full cycle: tests + interactive mode."""
+        self.run_health_check()
+        print("\n" + "="*50 + "\n")
         self.run_tests()
         self.run_interactive()
