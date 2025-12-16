@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 from src.config.settings import MODEL_NAME, OLLAMA_BASE_URL
+from src import __version__, __description__
 
 
 def health_check() -> Dict[str, Any]:
@@ -16,8 +17,8 @@ def health_check() -> Dict[str, Any]:
     """
     return {
         "status": "healthy",
-        "service": "Medical AI Service",
-        "version": "1.0.0",
+        "service": __description__,
+        "version": __version__,
         "timestamp": datetime.now().isoformat(),
         "components": {
             "ai_model": {
@@ -49,7 +50,8 @@ def quick_health_check() -> Dict[str, str]:
     """
     return {
         "status": "healthy",
-        "service": "Medical AI Service",
+        "service": __description__,
+        "version": __version__,
         "timestamp": datetime.now().isoformat()
     }
 

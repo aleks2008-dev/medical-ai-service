@@ -11,6 +11,7 @@ def test_health_check():
     assert isinstance(result, dict)
     assert result["status"] == "healthy"
     assert result["service"] == "Medical AI Service"
+    assert "version" in result
     assert result["version"] == "1.0.0"
     assert "timestamp" in result
     assert "components" in result
