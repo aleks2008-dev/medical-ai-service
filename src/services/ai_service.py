@@ -6,7 +6,8 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from src.config.settings import (
     MODEL_NAME, MODEL_PROVIDER, MODEL_TEMPERATURE, OLLAMA_BASE_URL,
-    SYSTEM_PROMPT, GENERAL_ASSISTANT_PROMPT, SYMPTOM_KEYWORDS
+    SYSTEM_PROMPT, GENERAL_ASSISTANT_PROMPT, SYMPTOM_KEYWORDS,
+    LANGUAGES, DEFAULT_LANGUAGE
 )
 from src.services.doctor_service import recommend_doctor, assess_severity
 
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class AIService:
     """Service for working with AI model."""
-    
+
     def __init__(self):
         """Initialize AI service."""
         try:
@@ -33,7 +34,29 @@ class AIService:
             print(f"Error initializing AI model: {e}")
             print("Please ensure Ollama is running and the model is available.")
             raise
-    
+
+    def _detect_language(self, text: str) -> str:
+        """Простое определение языка по тексту."""
+        # Проверяем кириллицу (русский)
+        cyrillic_chars = sum(1 for char in text if '\u0400' <= char <= '\u04FF')
+        if cyrillic_chars > len(text) * 0.3:  # >30% кириллицы
+            return 'ru'
+
+        # Проверяем испанские символы
+        spanish_chars = ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡']
+        if any(char in text.lower() for char in spanish_chars):
+            return 'es'
+
+        # По умолчанию английский
+        return DEFAULT_LANGUAGE
+
+    def _get_message(self, key: str, language: str = None) -> str:
+        """Получить сообщение на нужном языке."""
+        if language is None:
+            language = DEFAULT_LANGUAGE
+
+        return LANGUAGES.get(language, LANGUAGES[DEFAULT_LANGUAGE]).get(key, key)
+
     def analyze_and_respond(self, user_input: str) -> str:
         """Analyzes user input and returns response.
 
@@ -43,10 +66,12 @@ class AIService:
         Returns:
             AI assistant response
         """
-        logger.info(f"Processing input: {user_input[:50]}...")
+        # Определяем язык пользователя
+        detected_language = self._detect_language(user_input)
+        logger.info(f"Processing input in {detected_language}: {user_input[:50]}...")
 
         if not user_input or not user_input.strip():
-            return "Please provide your symptoms or question."
+            return self._get_message('empty_input', detected_language)
 
         # Проверка кэша
         cache_key = user_input.lower().strip()
@@ -68,7 +93,7 @@ class AIService:
             return response
         except Exception as e:
             logger.error(f"Error processing request: {e}")
-            return "Извините, произошла ошибка. Попробуйте еще раз."
+            return self._get_message('error', detected_language)
     
     def _has_symptoms(self, user_input: str) -> bool:
         """Checks for symptoms in user input.
@@ -127,5 +152,5 @@ class AIService:
             response = self.model.invoke(messages)
             return response.content
         except Exception as e:
-            print(f"Error in general chat: {e}")
-            return "I'm here to help with medical questions. Please describe your symptoms or ask a health-related question."
+            logger.error(f"Error in general chat: {e}")
+            return self._get_message('no_symptoms', detected_language)
