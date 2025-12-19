@@ -10,6 +10,7 @@ from src.config.settings import (
     LANGUAGES, DEFAULT_LANGUAGE
 )
 from src.services.doctor_service import recommend_doctor, assess_severity
+from src.services.doctor_service import recommend_doctor, assess_severity
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -66,15 +67,28 @@ class AIService:
         Returns:
             AI assistant response
         """
-        # Определяем язык пользователя
-        detected_language = self._detect_language(user_input)
-        logger.info(f"Processing input in {detected_language}: {user_input[:50]}...")
-
+        # Валидация входных данных
         if not user_input or not user_input.strip():
+            detected_language = self._detect_language(user_input) if user_input else DEFAULT_LANGUAGE
             return self._get_message('empty_input', detected_language)
 
+        user_input_stripped = user_input.strip()
+
+        # Определяем язык для валидации
+        detected_language = self._detect_language(user_input_stripped)
+
+        # Проверка минимальной длины
+        if len(user_input_stripped) < 3:
+            return self._get_message('short_input', detected_language)
+
+        # Проверка максимальной длины
+        if len(user_input_stripped) > 1000:
+            return self._get_message('long_input', detected_language)
+
+        logger.info(f"Processing input in {detected_language}: {user_input_stripped[:50]}...")
+
         # Проверка кэша
-        cache_key = user_input.lower().strip()
+        cache_key = user_input_stripped.lower()
         if cache_key in self.response_cache:
             logger.info("Response from cache")
             return self.response_cache[cache_key]
