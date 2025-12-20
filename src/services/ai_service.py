@@ -1,6 +1,7 @@
 """Service for working with AI model."""
 
 import logging
+import time
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -87,10 +88,14 @@ class AIService:
 
         logger.info(f"Processing input in {detected_language}: {user_input_stripped[:50]}...")
 
+        # Замер общего времени начала
+        total_start_time = time.time()
+
         # Проверка кэша
         cache_key = user_input_stripped.lower()
         if cache_key in self.response_cache:
-            logger.info("Response from cache")
+            total_time = time.time() - total_start_time
+            logger.info(f"Response from cache in {total_time:.3f}s")
             return self.response_cache[cache_key]
 
         try:
@@ -103,10 +108,14 @@ class AIService:
             if len(self.response_cache) < self.cache_max_size:
                 self.response_cache[cache_key] = response
 
-            logger.info("Response generated successfully")
+            # Финальный замер времени
+            final_time = time.time() - total_start_time
+            logger.info(f"Response generated successfully in {final_time:.3f}s")
+
             return response
         except Exception as e:
-            logger.error(f"Error processing request: {e}")
+            error_time = time.time() - total_start_time
+            logger.error(f"Error processing request in {error_time:.3f}s: {e}")
             return self._get_message('error', detected_language)
     
     def _has_symptoms(self, user_input: str) -> bool:
@@ -142,10 +151,18 @@ class AIService:
                 HumanMessage(content=f"Пациент: {user_input}\nРекомендация: {doctor_recommendation}\n{urgency_note}\nДай дружелюбный ответ.")
             ]
 
+            # Замер времени обработки AI модели
+            ai_start_time = time.time()
             response = self.model.invoke(messages)
+            ai_processing_time = time.time() - ai_start_time
+
+            total_time = time.time() - total_start_time
+            logger.info(f"AI processing: {ai_processing_time:.3f}s, Total: {total_time:.3f}s")
+
             return response.content
         except Exception as e:
-            logger.error(f"Error handling symptoms: {e}")
+            error_time = time.time() - total_start_time
+            logger.error(f"Error handling symptoms in {error_time:.3f}s: {e}")
             return f"На основе ваших симптомов рекомендую: {recommend_doctor(user_input)}"
     
     def _handle_general_chat(self, user_input: str) -> str:
@@ -162,9 +179,17 @@ class AIService:
                 SystemMessage(content=GENERAL_ASSISTANT_PROMPT),
                 HumanMessage(content=user_input)
             ]
-            
+
+            # Замер времени обработки AI модели
+            ai_start_time = time.time()
             response = self.model.invoke(messages)
+            ai_processing_time = time.time() - ai_start_time
+
+            total_time = time.time() - total_start_time
+            logger.info(f"General chat AI processing: {ai_processing_time:.3f}s, Total: {total_time:.3f}s")
+
             return response.content
         except Exception as e:
-            logger.error(f"Error in general chat: {e}")
+            error_time = time.time() - total_start_time
+            logger.error(f"Error in general chat in {error_time:.3f}s: {e}")
             return self._get_message('no_symptoms', detected_language)
