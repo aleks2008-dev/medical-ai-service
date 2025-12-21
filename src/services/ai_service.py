@@ -2,6 +2,7 @@
 
 import logging
 import time
+from collections import defaultdict
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -32,6 +33,9 @@ class AIService:
             )
             self.response_cache = {}
             self.cache_max_size = 100
+            self.request_times = defaultdict(list)
+            self.rate_limit = 10  # запросов в минуту
+            self.time_window = 60  # секунд
         except Exception as e:
             print(f"Error initializing AI model: {e}")
             print("Please ensure Ollama is running and the model is available.")
@@ -59,6 +63,20 @@ class AIService:
 
         return LANGUAGES.get(language, LANGUAGES[DEFAULT_LANGUAGE]).get(key, key)
 
+    def _check_rate_limit(self, user_id: str = "default") -> bool:
+        """Простая проверка rate limiting."""
+        now = time.time()
+        self.request_times[user_id] = [
+            t for t in self.request_times[user_id]
+            if now - t < self.time_window
+        ]
+
+        if len(self.request_times[user_id]) >= self.rate_limit:
+            return False
+
+        self.request_times[user_id].append(now)
+        return True
+
     def analyze_and_respond(self, user_input: str) -> str:
         """Analyzes user input and returns response.
 
@@ -82,11 +100,15 @@ class AIService:
         if len(user_input_stripped) < 3:
             return self._get_message('short_input', detected_language)
 
-        # Проверка максимальной длины
-        if len(user_input_stripped) > 1000:
-            return self._get_message('long_input', detected_language)
+    # Проверка максимальной длины
+    if len(user_input_stripped) > 1000:
+        return self._get_message('long_input', detected_language)
 
-        logger.info(f"Processing input in {detected_language}: {user_input_stripped[:50]}...")
+    # Rate limiting
+    if not self._check_rate_limit():
+        return self._get_message('rate_limit', detected_language)
+
+    logger.info(f"Processing input in {detected_language}: {user_input_stripped[:50]}...")
 
         # Замер общего времени начала
         total_start_time = time.time()
