@@ -12,7 +12,6 @@ from src.config.settings import (
     LANGUAGES, DEFAULT_LANGUAGE
 )
 from src.services.doctor_service import recommend_doctor, assess_severity
-from src.services.doctor_service import recommend_doctor, assess_severity
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)

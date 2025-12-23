@@ -25,7 +25,14 @@ def recommend_doctor(symptoms: str) -> str:
 
 
 def assess_severity(symptoms: str) -> dict:
-    """Простая оценка тяжести симптомов."""
+    """Assesses the severity level of symptoms.
+
+    Args:
+        symptoms: String with symptom description
+
+    Returns:
+        Dict containing severity level, score, and advice
+    """
     urgent_words = ['острая', 'сильная', 'тяжелая', 'невыносимая', 'кровотечение', 'потеря сознания']
     moderate_words = ['боль', 'температура', 'тошнота', 'рвота', 'кашель']
 
