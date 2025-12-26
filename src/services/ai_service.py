@@ -42,6 +42,11 @@ class AIService:
 
     def _detect_language(self, text: str) -> str:
         """Простое определение языка по тексту."""
+        if not isinstance(text, str) or not text.strip():
+            return DEFAULT_LANGUAGE
+
+        text = text.strip()
+
         # Проверяем кириллицу (русский)
         cyrillic_chars = sum(1 for char in text if '\u0400' <= char <= '\u04FF')
         if cyrillic_chars > len(text) * 0.3:  # >30% кириллицы
@@ -57,13 +62,23 @@ class AIService:
 
     def _get_message(self, key: str, language: str = None) -> str:
         """Получить сообщение на нужном языке."""
+        if not isinstance(key, str) or not key.strip():
+            return "Ошибка валидации сообщения"
+
         if language is None:
             language = DEFAULT_LANGUAGE
 
-        return LANGUAGES.get(language, LANGUAGES[DEFAULT_LANGUAGE]).get(key, key)
+        if not isinstance(language, str):
+            language = DEFAULT_LANGUAGE
+
+        language_dict = LANGUAGES.get(language, LANGUAGES.get(DEFAULT_LANGUAGE, {}))
+        return language_dict.get(key, key)
 
     def _check_rate_limit(self, user_id: str = "default") -> bool:
         """Простая проверка rate limiting."""
+        if not isinstance(user_id, str) or not user_id.strip():
+            user_id = "default"
+
         now = time.time()
         self.request_times[user_id] = [
             t for t in self.request_times[user_id]
@@ -85,7 +100,10 @@ class AIService:
         Returns:
             AI assistant response
         """
-        # Валидация входных данных
+        # Строгая валидация входных данных
+        if not isinstance(user_input, str):
+            return "Ошибка: входные данные должны быть строкой."
+
         if not user_input or not user_input.strip():
             detected_language = self._detect_language(user_input) if user_input else DEFAULT_LANGUAGE
             return self._get_message('empty_input', detected_language)
@@ -99,9 +117,17 @@ class AIService:
         if len(user_input_stripped) < 3:
             return self._get_message('short_input', detected_language)
 
-    # Проверка максимальной длины
-    if len(user_input_stripped) > 1000:
-        return self._get_message('long_input', detected_language)
+        # Проверка максимальной длины
+        if len(user_input_stripped) > 1000:
+            return self._get_message('long_input', detected_language)
+
+        # Проверка на наличие только пробелов или специальных символов
+        if not any(char.isalnum() for char in user_input_stripped):
+            return self._get_message('empty_input', detected_language)
+
+        # Проверка на слишком много повторяющихся символов (спам)
+        if len(set(user_input_stripped.lower())) < len(user_input_stripped) * 0.3:
+            return self._get_message('empty_input', detected_language)
 
     # Rate limiting
     if not self._check_rate_limit():
@@ -121,9 +147,9 @@ class AIService:
 
         try:
             if self._has_symptoms(user_input):
-                response = self._handle_symptoms(user_input)
+                response = self._handle_symptoms(user_input, total_start_time)
             else:
-                response = self._handle_general_chat(user_input)
+                response = self._handle_general_chat(user_input, total_start_time)
 
             # Сохранить в кэш
             if len(self.response_cache) < self.cache_max_size:
@@ -141,24 +167,31 @@ class AIService:
     
     def _has_symptoms(self, user_input: str) -> bool:
         """Checks for symptoms in user input.
-        
+
         Args:
             user_input: User input
-            
+
         Returns:
             True if symptoms found, False otherwise
         """
-        return any(keyword in user_input.lower() for keyword in SYMPTOM_KEYWORDS)
+        if not isinstance(user_input, str) or not user_input.strip():
+            return False
+
+        user_input_lower = user_input.lower().strip()
+        return any(keyword in user_input_lower for keyword in SYMPTOM_KEYWORDS)
     
-    def _handle_symptoms(self, user_input: str) -> str:
+    def _handle_symptoms(self, user_input: str, start_time: float = None) -> str:
         """Handles input with symptoms.
 
         Args:
             user_input: User input with symptoms
+            start_time: Start time for performance tracking
 
         Returns:
             Response with doctor recommendation
         """
+        method_start_time = time.time() if start_time is None else start_time
+
         try:
             doctor_recommendation = recommend_doctor(user_input)
 
@@ -177,24 +210,27 @@ class AIService:
             response = self.model.invoke(messages)
             ai_processing_time = time.time() - ai_start_time
 
-            total_time = time.time() - total_start_time
+            total_time = time.time() - method_start_time
             logger.info(f"AI processing: {ai_processing_time:.3f}s, Total: {total_time:.3f}s")
 
             return response.content
         except Exception as e:
-            error_time = time.time() - total_start_time
+            error_time = time.time() - method_start_time
             logger.error(f"Error handling symptoms in {error_time:.3f}s: {e}")
             return f"На основе ваших симптомов рекомендую: {recommend_doctor(user_input)}"
     
-    def _handle_general_chat(self, user_input: str) -> str:
+    def _handle_general_chat(self, user_input: str, start_time: float = None) -> str:
         """Handles general conversation.
-        
+
         Args:
             user_input: User input
-            
+            start_time: Start time for performance tracking
+
         Returns:
             General assistant response
         """
+        method_start_time = time.time() if start_time is None else start_time
+
         try:
             messages = [
                 SystemMessage(content=GENERAL_ASSISTANT_PROMPT),
@@ -206,11 +242,13 @@ class AIService:
             response = self.model.invoke(messages)
             ai_processing_time = time.time() - ai_start_time
 
-            total_time = time.time() - total_start_time
+            total_time = time.time() - method_start_time
             logger.info(f"General chat AI processing: {ai_processing_time:.3f}s, Total: {total_time:.3f}s")
 
             return response.content
         except Exception as e:
-            error_time = time.time() - total_start_time
+            error_time = time.time() - method_start_time
             logger.error(f"Error in general chat in {error_time:.3f}s: {e}")
+            # Получаем язык из входных данных
+            detected_language = self._detect_language(user_input)
             return self._get_message('no_symptoms', detected_language)
