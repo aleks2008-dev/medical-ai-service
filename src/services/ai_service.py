@@ -129,11 +129,11 @@ class AIService:
         if len(set(user_input_stripped.lower())) < len(user_input_stripped) * 0.3:
             return self._get_message('empty_input', detected_language)
 
-    # Rate limiting
-    if not self._check_rate_limit():
-        return self._get_message('rate_limit', detected_language)
+        # Rate limiting
+        if not self._check_rate_limit():
+            return self._get_message('rate_limit', detected_language)
 
-    logger.info(f"Processing input in {detected_language}: {user_input_stripped[:50]}...")
+        logger.info(f"Processing input in {detected_language}: {user_input_stripped[:50]}...")
 
         # Замер общего времени начала
         total_start_time = time.time()
