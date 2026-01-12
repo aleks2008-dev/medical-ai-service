@@ -10,7 +10,7 @@ def test_health_check():
     
     assert isinstance(result, dict)
     assert result["status"] == "healthy"
-    assert result["service"] == "Medical AI Service"
+    assert result["service"] == "Medical AI Service for symptom analysis and doctor recommendations"
     assert "version" in result
     assert result["version"] == "1.0.0"
     assert "timestamp" in result
@@ -24,7 +24,7 @@ def test_quick_health_check():
     
     assert isinstance(result, dict)
     assert result["status"] == "healthy"
-    assert result["service"] == "Medical AI Service"
+    assert result["service"] == "Medical AI Service for symptom analysis and doctor recommendations"
     assert "timestamp" in result
 
 
