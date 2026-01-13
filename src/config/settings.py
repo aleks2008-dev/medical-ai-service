@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Model settings
-MODEL_NAME = os.getenv("MODEL_NAME", "llama3.2:3b")
+MODEL_NAME = os.getenv("MODEL_NAME", "llama3.2:1b")
 MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "ollama")
 MODEL_TEMPERATURE = int(os.getenv("MODEL_TEMPERATURE", "0"))
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
