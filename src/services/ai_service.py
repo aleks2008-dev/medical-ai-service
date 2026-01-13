@@ -3,11 +3,12 @@
 import logging
 import time
 from collections import defaultdict
-from langchain.chat_models import init_chat_model
+from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from src.config.settings import (
     MODEL_NAME, MODEL_PROVIDER, MODEL_TEMPERATURE, OLLAMA_BASE_URL,
+    MODEL_NUM_CTX, MODEL_NUM_PREDICT,
     SYSTEM_PROMPT, GENERAL_ASSISTANT_PROMPT, SYMPTOM_KEYWORDS,
     LANGUAGES, DEFAULT_LANGUAGE
 )
@@ -24,11 +25,12 @@ class AIService:
     def __init__(self):
         """Initialize AI service."""
         try:
-            self.model = init_chat_model(
-                MODEL_NAME,
-                model_provider=MODEL_PROVIDER,
+            self.model = ChatOllama(
+                model=MODEL_NAME,
                 temperature=MODEL_TEMPERATURE,
-                base_url=OLLAMA_BASE_URL
+                base_url=OLLAMA_BASE_URL,
+                num_ctx=MODEL_NUM_CTX,
+                num_predict=MODEL_NUM_PREDICT
             )
             self.response_cache = {}
             self.cache_max_size = 100

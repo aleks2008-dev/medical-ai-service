@@ -7,10 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Model settings
-MODEL_NAME = os.getenv("MODEL_NAME", "llama3.2:1b")
+MODEL_NAME = os.getenv("MODEL_NAME", "llama3.2:3b-instruct-q4_0")
 MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "ollama")
 MODEL_TEMPERATURE = int(os.getenv("MODEL_TEMPERATURE", "0"))
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+
+# Оптимизация производительности для слабого железа
+MODEL_NUM_CTX = int(os.getenv("MODEL_NUM_CTX", "1024"))  # Минимальный контекст
+MODEL_NUM_PREDICT = int(os.getenv("MODEL_NUM_PREDICT", "128"))  # Короткие ответы
 
 # Application settings
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
