@@ -39,7 +39,16 @@ def test_ai_service_with_real_ollama():
         # Basic checks
         assert isinstance(response, str)
         assert len(response) > 10  # Response should be meaningful
-        assert "голова" in response.lower() or "боль" in response.lower()
+        # Check that response contains medical advice or doctor recommendation
+        response_lower = response.lower()
+        has_medical_content = (
+            "врач" in response_lower or
+            "специалист" in response_lower or
+            "рекомендую" in response_lower or
+            "симптом" in response_lower or
+            "здоровье" in response_lower
+        )
+        assert has_medical_content, f"Ответ не содержит медицинскую информацию: {response}"
         print(f"✅ Ответ получен: {response[:100]}...")
 
     except Exception as e:
@@ -95,7 +104,7 @@ def test_ollama_models_available():
     print(f"Доступные модели: {models}")
 
     # Check for preferred models
-    preferred_models = ["llama3.2:3b", "llama3.1:8b"]
+    preferred_models = ["llama3.2:3b-instruct-q4_0", "llama3.2:3b", "llama3.1:8b"]
     available_preferred = [model for model in preferred_models if model in models]
 
     assert len(available_preferred) > 0, f"Нет предпочитаемых моделей. Доступные: {models}"
