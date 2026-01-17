@@ -57,7 +57,7 @@ def test_config():
     """Test configuration."""
     return {
         "OLLAMA_BASE_URL": "http://localhost:11434",
-        "MODEL_NAME": "llama3.2:3b",
+        "MODEL_NAME": "llama3.2:3b-instruct-q4_0",
         "MODEL_PROVIDER": "ollama",
         "MODEL_TEMPERATURE": 0
     }

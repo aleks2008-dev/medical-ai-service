@@ -2,6 +2,7 @@
 
 import logging
 import time
+import os
 from collections import defaultdict
 from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -17,6 +18,18 @@ from src.services.doctor_service import recommend_doctor, assess_severity
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Оптимизация логирования для производительности
+PERFORMANCE_LOGGING = os.getenv("PERFORMANCE_LOGGING", "true").lower() == "true"
+
+def log_info(message: str, *args, **kwargs):
+    """Условное INFO логирование"""
+    if PERFORMANCE_LOGGING:
+        logger.info(message, *args, **kwargs)
+
+def log_error(message: str, *args, **kwargs):
+    """ERROR логирование (всегда активно)"""
+    logger.error(message, *args, **kwargs)
 
 
 class AIService:
@@ -135,8 +148,6 @@ class AIService:
         if not self._check_rate_limit():
             return self._get_message('rate_limit', detected_language)
 
-        logger.info(f"Processing input in {detected_language}: {user_input_stripped[:50]}...")
-
         # Замер общего времени начала
         total_start_time = time.time()
 
@@ -144,7 +155,7 @@ class AIService:
         cache_key = user_input_stripped.lower()
         if cache_key in self.response_cache:
             total_time = time.time() - total_start_time
-            logger.info(f"Response from cache in {total_time:.3f}s")
+            log_info(f"Response from cache in {total_time:.3f}s")
             return self.response_cache[cache_key]
 
         try:
@@ -159,12 +170,12 @@ class AIService:
 
             # Финальный замер времени
             final_time = time.time() - total_start_time
-            logger.info(f"Response generated successfully in {final_time:.3f}s")
+            log_info(f"Response generated successfully in {final_time:.3f}s")
 
             return response
         except Exception as e:
             error_time = time.time() - total_start_time
-            logger.error(f"Error processing request in {error_time:.3f}s: {e}")
+            log_error(f"Error processing request in {error_time:.3f}s: {e}")
             return self._get_message('error', detected_language)
     
     def _has_symptoms(self, user_input: str) -> bool:
@@ -213,12 +224,10 @@ class AIService:
             ai_processing_time = time.time() - ai_start_time
 
             total_time = time.time() - method_start_time
-            logger.info(f"AI processing: {ai_processing_time:.3f}s, Total: {total_time:.3f}s")
-
             return response.content
         except Exception as e:
             error_time = time.time() - method_start_time
-            logger.error(f"Error handling symptoms in {error_time:.3f}s: {e}")
+            log_error(f"Error handling symptoms in {error_time:.3f}s: {e}")
             return f"На основе ваших симптомов рекомендую: {recommend_doctor(user_input)}"
     
     def _handle_general_chat(self, user_input: str, start_time: float = None) -> str:
@@ -245,12 +254,10 @@ class AIService:
             ai_processing_time = time.time() - ai_start_time
 
             total_time = time.time() - method_start_time
-            logger.info(f"General chat AI processing: {ai_processing_time:.3f}s, Total: {total_time:.3f}s")
-
             return response.content
         except Exception as e:
             error_time = time.time() - method_start_time
-            logger.error(f"Error in general chat in {error_time:.3f}s: {e}")
+            log_error(f"Error in general chat in {error_time:.3f}s: {e}")
             # Получаем язык из входных данных
             detected_language = self._detect_language(user_input)
             return self._get_message('no_symptoms', detected_language)
