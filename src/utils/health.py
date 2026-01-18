@@ -87,49 +87,27 @@ def check_dependencies() -> Dict[str, bool]:
 
 
 def check_ai_service() -> Dict[str, Any]:
-    """
-    Check the health status of the AI service.
-
-    Returns:
-        Dict containing AI service health information
-    """
+    """Lightweight check of AI service configuration without model initialization."""
     try:
-        from src.services.ai_service import AIService
+        import requests
+        ollama_ok = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=2).status_code == 200
+    except:
+        ollama_ok = False
 
-        # Create instance to check initialization
-        ai = AIService()
-
-        # Check main components
-        checks = {
-            "model_loaded": hasattr(ai, 'model') and ai.model is not None,
-            "cache_enabled": hasattr(ai, 'response_cache'),
-            "rate_limiting": hasattr(ai, 'rate_limit') and hasattr(ai, 'time_window'),
-            "multilanguage": hasattr(ai, '_get_message') and hasattr(ai, '_detect_language')
-        }
-
-        # Determine overall status
-        all_healthy = all(checks.values())
-        status = "healthy" if all_healthy else "degraded"
-
-        # Count healthy components
-        healthy_count = sum(checks.values())
-        total_count = len(checks)
-
-        return {
-            "status": status,
-            "service": "ai_service",
-            "health_score": f"{healthy_count}/{total_count}",
-            "checks": checks,
-            "timestamp": datetime.now().isoformat()
-        }
-
-    except Exception as e:
-        return {
-            "status": "unhealthy",
-            "service": "ai_service",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
-        }
+    checks = {
+        "model_configured": bool(MODEL_NAME),
+        "ollama_url_configured": bool(OLLAMA_BASE_URL),
+        "ollama_accessible": ollama_ok
+    }
+    
+    healthy = sum(checks.values())
+    return {
+        "status": "healthy" if healthy == 3 else "degraded",
+        "service": "ai_service",
+        "health_score": f"{healthy}/3",
+        "checks": checks,
+        "timestamp": datetime.now().isoformat()
+    }
 
 
 def quick_health_check() -> Dict[str, Any]:
