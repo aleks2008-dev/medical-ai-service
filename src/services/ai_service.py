@@ -137,14 +137,17 @@ class AIService:
         
         user_input_stripped = user_input.strip()
         
-        # Rate limiting
-        if not self._check_rate_limit():
-            return self._get_message('rate_limit', lang)
-        
         # Кэш
         cache_key = user_input_stripped.lower()
         if cache_key in self.response_cache:
             return self.response_cache[cache_key]
+        
+        # Rate limiting - graceful degradation
+        if not self._check_rate_limit():
+            # Возвращаем базовую рекомендацию без AI
+            if self._has_symptoms(user_input):
+                return recommend_doctor(user_input)
+            return self._get_message('rate_limit', lang)
         
         try:
             response = self._handle_symptoms(user_input) if self._has_symptoms(user_input) else self._handle_general_chat(user_input)
