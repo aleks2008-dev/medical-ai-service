@@ -33,10 +33,21 @@ def log_error(message: str, *args, **kwargs):
 
 
 class AIService:
-    """Service for working with AI model."""
+    """Service for working with AI model (Singleton)."""
+    
+    _instance = None
+    _initialized = False
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
-        """Initialize AI service."""
+        """Initialize AI service (only once)."""
+        if AIService._initialized:
+            return
+        
         try:
             self.model = ChatOllama(
                 model=MODEL_NAME,
@@ -48,8 +59,9 @@ class AIService:
             self.response_cache = {}
             self.cache_max_size = 100
             self.request_times = defaultdict(list)
-            self.rate_limit = 10  # запросов в минуту
-            self.time_window = 60  # секунд
+            self.rate_limit = 10
+            self.time_window = 60
+            AIService._initialized = True
         except Exception as e:
             print(f"Error initializing AI model: {e}")
             print("Please ensure Ollama is running and the model is available.")
