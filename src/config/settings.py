@@ -12,9 +12,9 @@ MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "ollama")
 MODEL_TEMPERATURE = int(os.getenv("MODEL_TEMPERATURE", "0"))
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
-# Оптимизация производительности для слабого железа
-MODEL_NUM_CTX = int(os.getenv("MODEL_NUM_CTX", "1024"))  # Минимальный контекст
-MODEL_NUM_PREDICT = int(os.getenv("MODEL_NUM_PREDICT", "128"))  # Короткие ответы
+# Оптимизация производительности
+MODEL_NUM_CTX = int(os.getenv("MODEL_NUM_CTX", "512"))  # Уменьшен контекст для скорости
+MODEL_NUM_PREDICT = int(os.getenv("MODEL_NUM_PREDICT", "192"))  # Развернутые ответы
 
 # Application settings
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
@@ -23,16 +23,13 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 # System prompts
 SYSTEM_PROMPT = """
-Ты медицинский помощник. При анализе симптомов:
-1. Определи срочность обращения к врачу
-2. Дай рекомендацию специалиста
-3. Объясни почему именно этот врач
-4. Посоветуй что делать до визита к врачу
-
-Отвечай empathetically и профессионально.
+Ты медицинский помощник. Отвечай кратко:
+1. Рекомендуй специалиста
+2. Укажи срочность
+3. Дай базовый совет
 """
 
-GENERAL_ASSISTANT_PROMPT = "Ты дружелюбный медицинский ассистент. Отвечай кратко и вежливо."
+GENERAL_ASSISTANT_PROMPT = "Ты медицинский ассистент. Отвечай кратко."
 
 # Keywords for symptom detection
 SYMPTOM_KEYWORDS = [
