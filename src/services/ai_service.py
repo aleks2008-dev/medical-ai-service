@@ -19,6 +19,9 @@ from src.services.doctor_service import recommend_doctor, assess_severity
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Отключить логи httpx
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 # Оптимизация логирования для производительности
 PERFORMANCE_LOGGING = os.getenv("PERFORMANCE_LOGGING", "true").lower() == "true"
 
