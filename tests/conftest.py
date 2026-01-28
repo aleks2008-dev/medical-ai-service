@@ -9,8 +9,6 @@ from unittest.mock import Mock, patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from src.services.ai_service import AIService
-from src.services.doctor_service import recommend_doctor
-from src.models.symptom_data import SYMPTOM_DOCTOR_MAP
 
 
 @pytest.fixture

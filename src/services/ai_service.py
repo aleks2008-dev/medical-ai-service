@@ -8,21 +8,21 @@ from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from src.config.settings import (
-    MODEL_NAME, MODEL_PROVIDER, MODEL_TEMPERATURE, OLLAMA_BASE_URL,
+    MODEL_NAME, MODEL_TEMPERATURE, OLLAMA_BASE_URL,
     MODEL_NUM_CTX, MODEL_NUM_PREDICT,
     SYSTEM_PROMPT, GENERAL_ASSISTANT_PROMPT, SYMPTOM_KEYWORDS,
     LANGUAGES, DEFAULT_LANGUAGE
 )
-from src.services.doctor_service import recommend_doctor, assess_severity
+from src.services.doctor_service import recommend_doctor
 
-# Настройка логирования
+# Setting loging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Отключить логи httpx
+# Off logging httpx
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-# Оптимизация логирования для производительности
+# Optimazing logging
 PERFORMANCE_LOGGING = os.getenv("PERFORMANCE_LOGGING", "true").lower() == "true"
 
 def log_info(message: str, *args, **kwargs):
@@ -31,7 +31,7 @@ def log_info(message: str, *args, **kwargs):
         logger.info(message, *args, **kwargs)
 
 def log_error(message: str, *args, **kwargs):
-    """ERROR логирование (всегда активно)"""
+    """ERROR logging (everytime active)"""
     logger.error(message, *args, **kwargs)
 
 
@@ -71,29 +71,29 @@ class AIService:
             raise
 
     def _detect_language(self, text: str) -> str:
-        """Простое определение языка по тексту."""
+        """Simple detected language for text."""
         if not isinstance(text, str) or not text.strip():
             return DEFAULT_LANGUAGE
 
         text = text.strip()
 
-        # Проверяем кириллицу (русский)
+        # Check rus
         cyrillic_chars = sum(1 for char in text if '\u0400' <= char <= '\u04FF')
         if cyrillic_chars > len(text) * 0.3:  # >30% кириллицы
             return 'ru'
 
-        # Проверяем испанские символы
+        # Check esp
         spanish_chars = ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡']
         if any(char in text.lower() for char in spanish_chars):
             return 'es'
 
-        # По умолчанию английский
+        # Default eng
         return DEFAULT_LANGUAGE
 
     def _get_message(self, key: str, language: str = None) -> str:
-        """Получить сообщение на нужном языке."""
+        """Set massage on correct language"""
         if not isinstance(key, str) or not key.strip():
-            return "Ошибка валидации сообщения"
+            return "Error validation message"
 
         if language is None:
             language = DEFAULT_LANGUAGE
@@ -105,7 +105,7 @@ class AIService:
         return language_dict.get(key, key)
 
     def _check_rate_limit(self, user_id: str = "default") -> bool:
-        """Простая проверка rate limiting."""
+        """Simple check rate limiting."""
         if not isinstance(user_id, str) or not user_id.strip():
             user_id = "default"
 
@@ -122,7 +122,7 @@ class AIService:
         return True
 
     def _validate_input(self, text: str) -> tuple[bool, str, str]:
-        """Быстрая валидация входных данных.
+        """Fast validate input date.
         
         Returns:
             (is_valid, error_message, detected_language)
@@ -133,7 +133,7 @@ class AIService:
         text = text.strip()
         lang = self._detect_language(text)
         
-        # Базовые проверки
+        # Basics validations
         if len(text) < 3:
             return False, 'short_input', lang
         if len(text) > 1000:
@@ -145,21 +145,21 @@ class AIService:
 
     def analyze_and_respond(self, user_input: str) -> str:
         """Analyzes user input and returns response."""
-        # Валидация
+        # Validations
         is_valid, error_key, lang = self._validate_input(user_input)
         if not is_valid:
             return self._get_message(error_key, lang)
         
         user_input_stripped = user_input.strip()
         
-        # Кэш
+        # Cash
         cache_key = user_input_stripped.lower()
         if cache_key in self.response_cache:
             return self.response_cache[cache_key]
         
         # Rate limiting - graceful degradation
         if not self._check_rate_limit():
-            # Возвращаем базовую рекомендацию без AI
+            # Return basic recommendation without AI
             if self._has_symptoms(user_input):
                 return recommend_doctor(user_input)
             return self._get_message('rate_limit', lang)

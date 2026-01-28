@@ -1,6 +1,5 @@
 """Tests for health check functionality."""
 
-import pytest
 from src.utils.health import health_check, quick_health_check, check_dependencies
 
 
