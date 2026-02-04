@@ -61,16 +61,6 @@ LANGUAGES = {
         'processing': "Processing your request...",
         'no_symptoms': "No obvious symptoms found. If you have health questions, please describe symptoms in more detail.",
         'model_error': "Service temporarily unavailable. Please try later."
-    },
-    'es': {
-        'empty_input': "Por favor, describe tus síntomas o haz una pregunta.",
-        'short_input': "Por favor, describe los síntomas con más detalle (al menos 3 caracteres).",
-        'long_input': "Descripción demasiado larga. Por favor, describe los síntomas más brevemente (máximo 1000 caracteres).",
-        'rate_limit': "Demasiadas solicitudes. Por favor, espera un minuto.",
-        'error': "Lo siento, ocurrió un error. Por favor, inténtalo de nuevo.",
-        'processing': "Procesando tu solicitud...",
-        'no_symptoms': "No se encontraron síntomas obvios. Si tienes preguntas sobre la salud, describe los síntomas con más detalle.",
-        'model_error': "Servicio temporalmente no disponible. Por favor, inténtalo más tarde."
     }
 }
 

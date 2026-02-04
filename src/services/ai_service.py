@@ -82,13 +82,8 @@ class AIService:
         if cyrillic_chars > len(text) * 0.3:  # >30% кириллицы
             return 'ru'
 
-        # Check esp
-        spanish_chars = ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡']
-        if any(char in text.lower() for char in spanish_chars):
-            return 'es'
-
         # Default eng
-        return DEFAULT_LANGUAGE
+        return 'en'
 
     def _get_message(self, key: str, language: str = None) -> str:
         """Set massage on correct language"""
