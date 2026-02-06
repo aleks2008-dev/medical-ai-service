@@ -41,21 +41,6 @@ def health_check() -> Dict[str, Any]:
     }
 
 
-def quick_health_check() -> Dict[str, str]:
-    """
-    Quick health check for basic service availability.
-
-    Returns:
-        Simple health status
-    """
-    return {
-        "status": "healthy",
-        "service": __description__,
-        "version": __version__,
-        "timestamp": datetime.now().isoformat()
-    }
-
-
 def check_dependencies() -> Dict[str, bool]:
     """
     Check if all required dependencies are available.
