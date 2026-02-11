@@ -51,19 +51,19 @@ def check_dependencies() -> Dict[str, bool]:
     dependencies = {}
 
     try:
-        import langchain
+        import langchain  # noqa: F401
         dependencies["langchain"] = True
     except ImportError:
         dependencies["langchain"] = False
 
     try:
-        import langchain_core
+        import langchain_core  # noqa: F401
         dependencies["langchain_core"] = True
     except ImportError:
         dependencies["langchain_core"] = False
 
     try:
-        import pytest
+        import pytest  # noqa: F401
         dependencies["pytest"] = True
     except ImportError:
         dependencies["pytest"] = False
@@ -76,7 +76,7 @@ def check_ai_service() -> Dict[str, Any]:
     try:
         import requests
         ollama_ok = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=2).status_code == 200
-    except:
+    except Exception:
         ollama_ok = False
 
     checks = {

@@ -8,6 +8,8 @@ Intelligent medical assistant for symptom analysis and specialist doctor recomme
 - **Doctor Recommendations** - suggests appropriate specialists based on symptoms
 - **Multilingual Support** - Russian and English languages
 - **Interactive CLI** - console chat interface with the assistant
+- **REST API** - FastAPI endpoints for integration with other services
+- **Swagger UI** - interactive API documentation
 - **Local Processing** - works with Ollama without sending data to the cloud
 - **Performance Optimized** - fast responses with caching and graceful degradation
 - **Production Ready** - comprehensive testing, Docker support, health checks
@@ -15,6 +17,7 @@ Intelligent medical assistant for symptom analysis and specialist doctor recomme
 ## 🛠️ Technologies
 
 - **Python 3.8+**
+- **FastAPI** - modern web framework for building APIs
 - **LangChain** - framework for working with LLM
 - **Ollama** - local language model execution
 - **Llama 3.2:3b** - optimized language model
@@ -81,16 +84,68 @@ pip install -r requirements.txt
 
 ## 🚀 Usage
 
-### 1. Start Ollama
+### CLI Mode
+
+#### 1. Start Ollama
 
 ```bash
 ollama serve
 ```
 
-### 2. Run the assistant
+#### 2. Run the assistant
 
 ```bash
 python main.py
+```
+
+### API Mode
+
+#### 1. Start Ollama
+
+```bash
+ollama serve
+```
+
+#### 2. Run the API server
+
+```bash
+python3 -m uvicorn src.api.app:app --reload
+```
+
+#### 3. Access Swagger UI
+
+Open in browser: `http://127.0.0.1:8000/docs`
+
+#### 4. API Endpoints
+
+**POST /analyze** - Analyze symptoms
+```bash
+curl -X POST "http://127.0.0.1:8000/analyze" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "У меня болит голова и температура"}'
+```
+
+Response:
+```json
+{
+  "response": "Понимаю, что вам нехорошо. При головной боли и температуре рекомендую обратиться к терапевту или неврологу...",
+  "language": "ru",
+  "processing_time": 2.3
+}
+```
+
+**GET /health** - Check service status
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+Response:
+```json
+{
+  "status": "healthy",
+  "service": "Medical AI Service",
+  "version": "1.0.0"
+}
 ```
 
 ## 💬 Usage Examples
@@ -170,6 +225,9 @@ docker run -it medical-ai-service
 ```
 medical-ai-service/
 ├── src/                    # Source code
+│   ├── api/               # REST API
+│   │   ├── app.py         # FastAPI application
+│   │   └── models.py      # Pydantic models
 │   ├── config/            # Configuration
 │   │   └── settings.py    # Application settings
 │   ├── models/            # Data models
@@ -181,7 +239,7 @@ medical-ai-service/
 │       ├── cli.py         # CLI interface
 │       └── health.py      # Health checks
 ├── tests/                 # Test suite
-├── main.py               # Application entry point
+├── main.py               # CLI entry point
 ├── requirements.txt      # Dependencies
 ├── Dockerfile           # Container configuration
 ├── docker-compose.yaml  # Multi-service setup

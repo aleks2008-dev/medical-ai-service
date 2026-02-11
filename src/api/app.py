@@ -2,11 +2,8 @@
 
 import time
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
 
 from src.api.models import SymptomRequest, AnalysisResponse, HealthResponse
-from src.services.ai_service import AIService
-
 from src.services.ai_service import AIService
 from src import __version__, __description__
 
@@ -18,6 +15,7 @@ app = FastAPI(
 )
 
 ai_service = AIService()
+
 
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_symptoms(request: SymptomRequest):
@@ -40,6 +38,7 @@ async def analyze_symptoms(request: SymptomRequest):
             detail=f"Error processing request: {str(e)}"
         )
 
+
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """Check service health status.
@@ -49,6 +48,7 @@ async def health_check():
         service=__description__,
         version=__version__
     )
+
 
 @app.get("/")
 async def root():

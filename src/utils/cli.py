@@ -2,7 +2,7 @@
 
 from src.config.settings import EXIT_COMMANDS
 from src.services.ai_service import AIService
-from src.utils.health import health_check, quick_health_check
+from src.utils.health import health_check
 
 
 class CLI:

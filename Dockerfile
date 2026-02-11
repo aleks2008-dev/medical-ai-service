@@ -20,4 +20,4 @@ ENV MODEL_TEMPERATURE=0
 ENV LOG_LEVEL=INFO
 ENV DEBUG=False
 
-CMD ["python", "main.py"]
+CMD ["python", "-m", "uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -3,6 +3,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 
+
 class SymptomRequest(BaseModel):
     """Request model for symptom analysis."""
     text: str = Field(
@@ -12,6 +13,7 @@ class SymptomRequest(BaseModel):
         description="Symptom description from user",
         examples=["У меня болит голова и температура"]
     )
+
 
 class AnalysisResponse(BaseModel):
     """Response model for symptom analysis."""
@@ -28,6 +30,7 @@ class AnalysisResponse(BaseModel):
         description="Processing time in seconds"
     )
 
+
 class HealthResponse(BaseModel):
     """Response model for health check."""
     status: str = Field(
@@ -35,7 +38,7 @@ class HealthResponse(BaseModel):
         description="Service status (healthy/unhealthy)"
     )
     service: str = Field(
-       ...,
+        ...,
         description="Service name"
     )
     version: str = Field(
