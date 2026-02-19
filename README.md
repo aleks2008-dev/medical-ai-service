@@ -118,9 +118,9 @@ Open in browser: `http://127.0.0.1:8000/docs`
 
 #### 4. API Endpoints
 
-**POST /analyze** - Analyze symptoms
+**POST /api/v1/analyze** - Analyze symptoms
 ```bash
-curl -X POST "http://127.0.0.1:8000/analyze" \
+curl -X POST "http://127.0.0.1:8000/api/v1/analyze" \
   -H "Content-Type: application/json" \
   -d '{"text": "У меня болит голова и температура"}'
 ```
@@ -134,9 +134,9 @@ Response:
 }
 ```
 
-**GET /health** - Check service status
+**GET /api/v1/health** - Check service status
 ```bash
-curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8000/api/v1/health
 ```
 
 Response:
@@ -145,6 +145,24 @@ Response:
   "status": "healthy",
   "service": "Medical AI Service",
   "version": "1.0.0"
+}
+```
+
+**GET /** - API information
+```bash
+curl http://127.0.0.1:8000/
+```
+
+Response:
+```json
+{
+  "service": "Medical AI Service API",
+  "version": "1.0.0",
+  "api_versions": {
+    "v1": "/api/v1"
+  },
+  "docs": "/docs",
+  "health": "/api/v1/health"
 }
 ```
 
