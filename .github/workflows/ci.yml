@@ -34,10 +34,7 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest tests/test_health.py::test_health_check -v --tb=short
-        pytest tests/test_health.py::test_check_dependencies -v --tb=short
-        pytest tests/test_health.py::test_health_check_components -v --tb=short
-        pytest tests/test_health.py::test_health_check_environment -v --tb=short
+        pytest tests/test_smoke.py -v --tb=short
 
   docker:
     runs-on: ubuntu-latest
