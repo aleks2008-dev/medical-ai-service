@@ -1,5 +1,10 @@
 # 🏥 Medical AI Service
 
+![CI/CD](https://github.com/aleks2008-dev/medical-ai-service/workflows/Medical%20AI%20Service%20CI/badge.svg)
+![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat-square&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green?style=flat-square&logo=fastapi)
+![Docker](https://img.shields.io/badge/Docker-Ready-blue?style=flat-square&logo=docker)
+
 Intelligent medical assistant for symptom analysis and specialist doctor recommendations.
 
 ## 🚀 Features
